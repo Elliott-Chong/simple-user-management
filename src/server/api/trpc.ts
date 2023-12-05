@@ -82,7 +82,33 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+const enforeUserIsSuperAdmin = t.middleware(({ ctx, next }) => {
+  if (ctx.session?.user.systemRole !== "superadmin") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+const enforeUserIsAdmin = t.middleware(({ ctx, next }) => {
+  if (
+    ctx.session?.user.systemRole !== "admin" &&
+    ctx.session?.user.systemRole !== "superadmin"
+  ) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -102,3 +128,5 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const adminProdcedure = t.procedure.use(enforeUserIsAdmin);
+export const superAdminProdcedure = t.procedure.use(enforeUserIsSuperAdmin);

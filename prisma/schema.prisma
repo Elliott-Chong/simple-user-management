@@ -6,24 +6,12 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
-}
-
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
 }
 
 // Necessary for Next auth
@@ -35,7 +23,7 @@ model Account {
     providerAccountId String
     refresh_token     String? // @db.Text
     access_token      String? // @db.Text
-    expires_at        Int?
+    expires_at        Int
     token_type        String?
     scope             String?
     id_token          String? // @db.Text
@@ -54,14 +42,46 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+    id                String             @id @default(cuid())
+    name              String?
+    email             String?            @unique
+    emailVerified     DateTime?
+    image             String?
+    systemRole        SystemRole         @default(user)
+    accounts          Account[]
+    sessions          Session[]
+    userOrganizations UserOrganization[]
+}
+
+model UserOrganization {
+    id             String       @id @default(cuid())
+    userId         String
+    organizationId String
+    role           OrgRole
+    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+    id                String             @id @default(cuid())
+    name              String
+    projects          Project[]
+    userOrganizations UserOrganization[]
+}
+
+model Project {
+    id             String       @id @default(cuid())
+    name           String
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    forms          Form[]
+}
+
+model Form {
+    id        String  @id @default(cuid())
+    name      String
+    projectId String
+    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -70,4 +90,16 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+enum SystemRole {
+    superadmin
+    admin
+    user
+}
+
+enum OrgRole {
+    consultant
+    stakeholder
+    upperManagementStakeholder
 }
