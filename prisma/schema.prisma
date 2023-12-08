@@ -51,6 +51,7 @@ model User {
     accounts          Account[]
     sessions          Session[]
     userOrganizations UserOrganization[]
+    userProjects      UserProject[]
 }
 
 model UserOrganization {
@@ -62,26 +63,38 @@ model UserOrganization {
     organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
+model UserProject {
+    id        String  @id @default(cuid())
+    userId    String
+    projectId String
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
 model Organization {
     id                String             @id @default(cuid())
     name              String
     projects          Project[]
     userOrganizations UserOrganization[]
+    createdAt         DateTime           @default(now())
 }
 
 model Project {
-    id             String       @id @default(cuid())
+    id             String        @id @default(cuid())
     name           String
     organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     forms          Form[]
+    createdAt      DateTime      @default(now())
+    userProjects   UserProject[]
 }
 
 model Form {
-    id        String  @id @default(cuid())
+    id        String   @id @default(cuid())
     name      String
     projectId String
-    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
 }
 
 model VerificationToken {
@@ -100,6 +113,5 @@ enum SystemRole {
 
 enum OrgRole {
     consultant
-    stakeholder
     upperManagementStakeholder
 }

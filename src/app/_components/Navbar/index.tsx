@@ -16,7 +16,7 @@ const Navbar = async () => {
   ];
   if (user.systemRole === "superadmin") {
     links.push({
-      name: "SuperAdmin",
+      name: "Super Admin",
       href: "/superadmin",
     });
   }
@@ -31,7 +31,7 @@ const Navbar = async () => {
     });
   }
   return (
-    <nav className="flex h-20 items-center gap-4 border-b px-6">
+    <nav className="flex h-20 items-center gap-4 border-b px-10">
       <h1 className="text-xl font-bold">Navbar</h1>
       {links.map((link) => (
         <Link key={link.href} href={link.href}>

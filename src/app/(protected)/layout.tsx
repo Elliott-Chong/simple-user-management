@@ -9,6 +9,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import Navbar from "../_components/Navbar";
 import { Toaster } from "sonner";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "INC UMS",
@@ -28,7 +29,9 @@ export default async function RootLayout({
       <body className={`font-sans ${GeistSans.className}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
           <NextTopLoader showSpinner={false} />
-          <Navbar />
+          <Suspense>
+            <Navbar />
+          </Suspense>
           <main className="p-10">{children}</main>
           <Toaster richColors />
         </TRPCReactProvider>

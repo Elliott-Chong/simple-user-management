@@ -38,11 +38,13 @@
     "nodemailer": "^6.9.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "server-only": "^0.0.1",
     "sonner": "^1.2.4",
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
+    "xlsx": "^0.18.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
