@@ -8,6 +8,7 @@ import EmailProvider from "next-auth/providers/email";
 
 import { db } from "@/server/db";
 import type { User } from "@prisma/client";
+import { sendVerificationRequest } from "./magicLinkEmail";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -39,11 +40,10 @@ export const authOptions: NextAuthOptions = {
       if (!user.email) return false;
       const exists = await db.user.findUnique({
         where: {
-          email: user.email,
+          email: user.email.toLowerCase(),
         },
       });
-      if (exists) return true;
-      else return false;
+      return !!exists;
     },
   },
   adapter: PrismaAdapter(db),
@@ -58,6 +58,7 @@ export const authOptions: NextAuthOptions = {
         },
       },
       from: process.env.EMAIL_FROM,
+      sendVerificationRequest: sendVerificationRequest,
     }),
   ],
 };

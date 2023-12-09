@@ -49,6 +49,7 @@ export default function Home() {
                 setEmail("");
               }
               if (data?.error === "AccessDenied") {
+                setSignedIn(false);
                 toast.error(
                   "Please contact your system administrator to get access to the system.",
                 );

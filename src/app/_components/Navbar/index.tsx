@@ -21,10 +21,10 @@ const Navbar = async () => {
     });
   }
   if (user.systemRole === "superadmin" || user.systemRole === "admin") {
-    links.push({
-      name: "Admin",
-      href: "/admin",
-    });
+    // links.push({
+    //   name: "Admin",
+    //   href: "/admin",
+    // });
     links.push({
       name: "Orgazations",
       href: "/organizations",

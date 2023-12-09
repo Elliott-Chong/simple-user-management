@@ -1,7 +1,23 @@
+import { getServerAuthSession } from "@/server/auth";
+import { db } from "@/server/db";
+import SuperAdminDashboard from "./SuperAdminDashboard";
+import { Suspense } from "react";
+import NormalUserDashboard from "./NormalUserDashboard";
+
 export default async function Home() {
+  const { user } = (await getServerAuthSession())!;
   return (
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-      hi
-    </div>
+    <>
+      {["superadmin", "admin"].includes(user.systemRole) && (
+        <Suspense>
+          <SuperAdminDashboard />
+        </Suspense>
+      )}
+      {user.systemRole === "user" && (
+        <Suspense>
+          <NormalUserDashboard />
+        </Suspense>
+      )}
+    </>
   );
 }
